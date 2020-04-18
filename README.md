@@ -36,3 +36,5 @@ Once the server is up and the application is running ion the localhost, you will
 ### Link to the git repository
 https://github.com/Madhavic1/Budget-Tracker-PWA.git
 
+### Link to Deployed Application on heroku
+https://glacial-peak-07886.herokuapp.com/
