@@ -33,4 +33,8 @@ router.get("/api/transaction", (req, res) => {
     });
 });
 
+app.get("/", function(req, res) {
+  res.json(path.join(__dirname, "public/index.html"));
+});
+
 module.exports = router;
