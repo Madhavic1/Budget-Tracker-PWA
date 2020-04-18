@@ -11,7 +11,6 @@ request.onsuccess = function(event) {
   db = event.target.result;
  //check if the browser is online, if yes post the pending data to mongoose database 
   if (navigator.onLine) {
-    console.log("if ")
     checkPendingDb();
   }
 };
@@ -19,7 +18,6 @@ request.onsuccess = function(event) {
 request.onerror = (event) => {
   console.log("Error occured : "+event.target.errorCode);
 }
-
 
 fetch("/api/transaction")
   .then(response => {
@@ -47,7 +45,6 @@ function populateTotal() {
 function populateTable() {
   let tbody = document.querySelector("#tbody");
   tbody.innerHTML = "";
-
   transactions.forEach(transaction => {
     // create and populate a table row
     let tr = document.createElement("tr");
@@ -55,7 +52,6 @@ function populateTable() {
       <td>${transaction.name}</td>
       <td>${transaction.value}</td>
     `;
-
     tbody.appendChild(tr);
   });
 }
@@ -64,7 +60,6 @@ function populateChart() {
   // copy array and reverse it
   let reversed = transactions.slice().reverse();
   let sum = 0;
-
   // create date labels for chart
   let labels = reversed.map(t => {
     let date = new Date(t.date);
@@ -141,7 +136,8 @@ function sendTransaction(isAdding) {
       "Content-Type": "application/json"
     }
   })
-  .then(response => {    
+  .then(response => {   
+ //   setTimeout() 
     return response.json();
   })
   .then(data => {
@@ -156,7 +152,6 @@ function sendTransaction(isAdding) {
   })
   .catch(err => {
     // fetch failed, so save in indexed db
-    console.log(transaction);
     saveRecord(transaction);
 
     // clear form
@@ -166,14 +161,11 @@ function sendTransaction(isAdding) {
 }
 
 function checkPendingDb(){
-  console.log("Entered checkPendingDB")
   const transaction = db.transaction(["pending"],"readwrite");
   const store = transaction.objectStore("pending");
   const getAllPending = store.getAll();
-console.log(getAllPending);
   getAllPending.onsuccess = () => {
     if(getAllPending.result.length > 0){
-      console.log(getAllPending.result);
       fetch("/api/transaction/bulk",{
         method: "POST",
         body: JSON.stringify(getAllPending.result),
@@ -199,11 +191,14 @@ console.log(getAllPending);
 }
 
 function saveRecord(pendingData){
-  console.log(pendingData);
-  console.log(db);
     const transaction = db.transaction(["pending"],"readwrite");
     const store = transaction.objectStore("pending");
     store.add(pendingData);
+}
+
+function postDataAndReloadPage(){
+  checkPendingDb();
+  location.reload();
 }
 
 
@@ -214,3 +209,4 @@ document.querySelector("#add-btn").onclick = function() {
 document.querySelector("#sub-btn").onclick = function() {
   sendTransaction(false);
 };
+window.addEventListener("online",postDataAndReloadPage);
